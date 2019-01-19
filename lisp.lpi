@@ -26,7 +26,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <Units Count="2">
+    <Units Count="4">
       <Unit0>
         <Filename Value="lisp.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -35,6 +35,14 @@
         <Filename Value="units\unit_cell.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="units\unit_atoms.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="units\unit_functions.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
