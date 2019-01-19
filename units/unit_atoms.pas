@@ -23,7 +23,7 @@ type
     FValue: Boolean;
   public
     constructor Create(StrValue: string);
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
   { TNumber }
@@ -43,7 +43,7 @@ type
     function Multiply(Params: TList): TInteger;
     function Divide(Params: TList): TInteger;
     function Equals(X: TInteger): TBoolean;
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
   { TString }
@@ -53,7 +53,7 @@ type
     FStrValue: string;
   public
     constructor Create(StrValue: string);
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
   { TSymbol }
@@ -71,7 +71,7 @@ begin
 
 end;
 
-procedure TBoolean.Print(OutputStream: TStream);
+procedure TBoolean.Print(var OutputStream: TextFile);
 begin
 
 end;
@@ -108,9 +108,9 @@ begin
 
 end;
 
-procedure TInteger.Print(OutputStream: TStream);
+procedure TInteger.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar(FValue.ToString)^, FValue.ToString.Length)
+  write(OutputStream, FValue.ToString)
 end;
 
 { TString }
@@ -120,9 +120,9 @@ begin
   FStrValue := StrValue
 end;
 
-procedure TString.Print(OutputStream: TStream);
+procedure TString.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar(FStrValue)^, FStrValue.Length)
+  write(OutputStream, FStrValue)
 end;
 
 end.

@@ -20,7 +20,7 @@ type
 
   TLispFunction = class abstract(TInterfacedObject, ISExpression)
   public
-    procedure Print(OutputStream: TStream); virtual; abstract;
+    procedure Print(var OutputStream: TextFile); virtual; abstract;
   end;
 
   { TSpecialForm }
@@ -29,7 +29,7 @@ type
   private
     FFunction: function(ParamList, Env: TList): ISExpression;
   public
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
   { TPrimitiveFunction }
@@ -38,7 +38,7 @@ type
   private
     FFunction: function(ParamList, Env: TList): ISExpression;
   public
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
   { TClosure }
@@ -47,30 +47,30 @@ type
   private
     FLambda: TList;
   public
-    procedure Print(OutputStream: TStream); override;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
 implementation
 
 { TClosure }
 
-procedure TClosure.Print(OutputStream: TStream);
+procedure TClosure.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar('#<closure>')^, '#<closure>'.Length)
+  write(OutputStream, '#<closure>')
 end;
 
 { TPrimitiveFunction }
 
-procedure TPrimitiveFunction.Print(OutputStream: TStream);
+procedure TPrimitiveFunction.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar('#<primitive>')^, '#<primitive>'.Length)
+  write(OutputStream, '#<primitive>')
 end;
 
 { TSpecialForm }
 
-procedure TSpecialForm.Print(OutputStream: TStream);
+procedure TSpecialForm.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar('#<syntax>')^, '#<syntax>'.Length)
+  write(OutputStream, '#<syntax>')
 end;
 
 end.

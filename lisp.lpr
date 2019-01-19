@@ -8,31 +8,27 @@
 program lisp;
 
 uses
-  Classes, SysUtils, IOStream, unit_cell, unit_atoms, unit_functions;
+  Classes, SysUtils, unit_cell, unit_atoms, unit_functions;
 
 var
-  OutputStream: TStream;
+  OutputStream: TextFile;
   Cells: array [0..2] of ISExpression;
   plus, one, two: ISExpression;
-  a, b: TList;
 
 begin
-  OutputStream := TIOStream.Create(iosOutput);
-  plus := TPrimitiveFunction.Create;
-  one := TInteger.Create(1);
-  two := TInteger.Create(2);
-  Cells[2] := TList.Create(two, TLispNil.GetInstance);
+  OutputStream := Output;    // Asign output of this program to stdout.
+  plus := TPrimitiveFunction.Create;   plus.Print(OutputStream);
+  one := TInteger.Create(1);   one.Print(OutputStream);
+  two := TInteger.Create(2);   two.Print(OutputStream);
+  writeln(OutputStream);
+  //Cells[2] := TList.Create(one, two);
+  //Cells[1] := TList.Create;
+  //Cells[1].Print(OutputStream);
+  Cells[2] := TList.Create(two, TLispNil.Create);
   Cells[1] := TList.Create(one, Cells[2]);
   Cells[0] := TList.Create(plus, Cells[1]);
-  try
-    Cells[0].Print(OutputStream);
-    OutputStream.writeAnsiString(#13#10);
-    a := TLispNil.GetInstance;
-    b := TLispNil.GetInstance;
-    writeln(a = b);
-  finally
-    OutputStream.Free;
-  end;
-  readln
+  Cells[0].Print(OutputStream);
+  writeln(OutputStream);
+  //readln
 end.
 

@@ -5,3 +5,4 @@
 - http://www.dsl.gr.jp/~tf/lisp.html
 - http://blog.bugyo.tk/lyrical/archives/1537
 - http://www.cobalt.co.jp/writing/java_lisp/java-lisp1.htm
+- http://wiki.freepascal.org/Singleton_Pattern

@@ -19,7 +19,7 @@ type
   { ISExpression }
 
   ISExpression = interface
-    procedure Print(OutputStream: TStream);
+    procedure Print(var OutputStream: TextFile);
   end;
 
   { TCell }
@@ -40,26 +40,27 @@ type
 
   TAtom = class abstract(TInterfacedObject, ISExpression)
   public
-    procedure Print(OutputStream: TStream); virtual; abstract;
+    procedure Print(var OutputStream: TextFile); virtual; abstract;
   end;
 
   { TList }
 
   TList = class(TCell, ISExpression)
   public
-    procedure Print(OutputStream: TStream); virtual;
+    procedure Print(var OutputStream: TextFile); virtual;
   end;
 
   { TLispNil }
 
   TLispNil = class(TList)
   private
-    constructor Create;
+    constructor Init;
+    // When call the inherited destructor, an segmentation error occurs.
+    // How should FInstance be released?
     class var FInstance: TLispNil;
   public
-    class function GetInstance: TLispNil;
-    procedure Print(OutputStream: TStream); override;
-    class procedure ReleaseInstance;
+    class function Create: TLispNil;
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
 implementation
@@ -68,8 +69,8 @@ implementation
 
 constructor TCell.Create;
 begin
-  FCar := TLispNil.GetInstance;
-  FCdr := TLispNil.GetInstance
+  FCar := TLispNil.Create;
+  FCdr := TLispNil.Create
 end;
 
 constructor TCell.Create(Car, Cdr: ISExpression);
@@ -85,66 +86,53 @@ end;
 
 { TLispNil }
 
-constructor TLispNil.Create;
+constructor TLispNil.Init;
 begin
-  // Do nothing
+  inherited Create(nil, nil)
 end;
 
-class function TLispNil.GetInstance: TLispNil;
+class function TLispNil.Create: TLispNil;
 begin
   if not Assigned(FInstance) then
-    FInstance := Self.Create;
+    FInstance := TLispNil.Init;
   Result := FInstance
 end;
 
-procedure TLispNil.Print(OutputStream: TStream);
+procedure TLispNil.Print(var OutputStream: TextFile);
 begin
-  OutputStream.Write(PChar('(')^, SizeOf(Char));
-  OutputStream.Write(PChar(')')^, SizeOf(Char))
-end;
-
-class procedure TLispNil.ReleaseInstance;
-begin
-  if Assigned(FInstance) then
-    FInstance.Free
+  write(OutputStream, '()')
 end;
 
 { TList }
 
-procedure TList.Print(OutputStream: TStream);
+procedure TList.Print(var OutputStream: TextFile);
 var
-  CurrentCell: TCell;
+  CurrentCell: TList;
 begin
-  OutputStream.Write(PChar('(')^, SizeOf(Char));
+  write(OutputStream, '(');
   CurrentCell := Self;
   while True do
   begin
     CurrentCell.Car.Print(OutputStream);
-    if CurrentCell.Cdr = ISExpression(TLispNil.GetInstance) then
+    if (CurrentCell.Cdr as TList) = TLispNil.Create then
     begin
-      OutputStream.Write(PChar(')')^, SizeOf(Char));
+      write(OutputStream, ')');
       break
     end
     else if CurrentCell.Cdr is TAtom then
     begin
-      write(StdOut, ' . ');           // TODO:
+      write(OutputStream, ' . ');
       CurrentCell.Cdr.Print(OutputStream);
-      write(StdOut, ')');
+      write(OutputStream, ')');
       break
     end
     else
     begin
-      OutputStream.Write(PChar(' ')^, SizeOf(Char));
+      write(OutputStream, ' ');
       CurrentCell := CurrentCell.Cdr as TList;
     end
   end
 end;
-
-initialization
-  TLispNil.GetInstance;
-
-finalization
-  TLispNil.ReleaseInstance;
 
 end.
 
