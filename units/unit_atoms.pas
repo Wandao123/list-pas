@@ -99,26 +99,16 @@ begin
   Result := TInteger.Create(FValue * X.Value)
 end;
 
-// ToDo: Implementing a fraction class, make this function return such class.
+{ ToDo: Implementing a fraction class, make this function return such class. }
+/// <returns>
+/// nil if division by zero occurs; otherwise, the quotient of Self.FValue and X.Value.
+/// </returns>
 function TInteger.Divide(X: TInteger): TInteger;
 begin
-  Result := TInteger.Create(FValue div X.Value)
-  {try
-    Result := TInteger.Create(FValue div X.Value)
-  except
-    on EZeroDivide do
-    begin
-      writeln(ErrOutput, 'Divided by zero');
-      Result := nil
-    end
-  end}
-  {if X.Value = 0 then
-  begin
-    Result := nil;
-    raise EZeroDivide.Create('Divided by zero')
-  end
+  if X.Value = 0 then
+    Result := nil
   else
-    Result := TInteger.Create(FValue div X.Value)}
+    Result := TInteger.Create(FValue div X.Value)
 end;
 
 function TInteger.Equals(X: TInteger): TBoolean;
