@@ -31,7 +31,6 @@ type
   public
     constructor Create;
     constructor Create(Car, Cdr: ISExpression);
-    destructor Destroy; override;
     property Car: ISExpression read FCar;
     property Cdr: ISExpression read FCdr;
   end;
@@ -77,11 +76,6 @@ constructor TCell.Create(Car, Cdr: ISExpression);
 begin
   Self.FCar := Car;
   Self.FCdr := Cdr
-end;
-
-destructor TCell.Destroy;
-begin
-  inherited
 end;
 
 { TLispNil }

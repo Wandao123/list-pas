@@ -38,12 +38,13 @@ type
     FValue: Integer;
   public
     constructor Create(Value: Integer);
-    function Add(Params: TList): TInteger;
-    function Subtract(Params: TList): TInteger;
-    function Multiply(Params: TList): TInteger;
-    function Divide(Params: TList): TInteger;
+    function Add(X: TInteger): TInteger;
+    function Subtract(X: TInteger): TInteger;
+    function Multiply(X: TInteger): TInteger;
+    function Divide(X: TInteger): TInteger;
     function Equals(X: TInteger): TBoolean;
     procedure Print(var OutputStream: TextFile); override;
+    property Value: Integer read FValue;
   end;
 
   { TString }
@@ -83,24 +84,41 @@ begin
   FValue := Value
 end;
 
-function TInteger.Add(Params: TList): TInteger;
+function TInteger.Add(X: TInteger): TInteger;
 begin
-
+  Result := TInteger.Create(FValue + X.Value)
 end;
 
-function TInteger.Subtract(Params: TList): TInteger;
+function TInteger.Subtract(X: TInteger): TInteger;
 begin
-
+  Result := TInteger.Create(FValue - X.Value)
 end;
 
-function TInteger.Multiply(Params: TList): TInteger;
+function TInteger.Multiply(X: TInteger): TInteger;
 begin
-
+  Result := TInteger.Create(FValue * X.Value)
 end;
 
-function TInteger.Divide(Params: TList): TInteger;
+// ToDo: Implementing a fraction class, make this function return such class.
+function TInteger.Divide(X: TInteger): TInteger;
 begin
-
+  Result := TInteger.Create(FValue div X.Value)
+  {try
+    Result := TInteger.Create(FValue div X.Value)
+  except
+    on EZeroDivide do
+    begin
+      writeln(ErrOutput, 'Divided by zero');
+      Result := nil
+    end
+  end}
+  {if X.Value = 0 then
+  begin
+    Result := nil;
+    raise EZeroDivide.Create('Divided by zero')
+  end
+  else
+    Result := TInteger.Create(FValue div X.Value)}
 end;
 
 function TInteger.Equals(X: TInteger): TBoolean;
