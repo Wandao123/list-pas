@@ -12,17 +12,38 @@ unit unit_atoms;
 interface
 
 uses
-  Classes, SysUtils, unit_cell;
+  Classes, SysUtils,{ Math,} unit_cell;
 
 type
 
   { TBoolean }
 
-  TBoolean = class(TAtom)
+  TBoolean = class abstract(TAtom)
+  end;
+
+  { TLispTrue }
+
+  TLispTrue = class(TBoolean)
+  // This class is implemented as the singleton pattern like TLispNil,
+  // so that this has a same problem as TLispNil.
   private
-    FValue: Boolean;
+    constructor Init;
+    class var FInstance: TLispTrue;
   public
-    constructor Create(StrValue: string);
+    class function Create: TLispTrue;
+    procedure Print(var OutputStream: TextFile); override;
+  end;
+
+  { TLispFalse }
+
+  TLispFalse = class(TBoolean)
+  // This class is implemented as the singleton pattern like TLispNil,
+  // so that this has a same problem as TLispNil.
+  private
+    constructor Init;
+    class var FInstance: TLispFalse;
+  public
+    class function Create: TLispFalse;
     procedure Print(var OutputStream: TextFile); override;
   end;
 
@@ -42,7 +63,11 @@ type
     function Subtract(X: TInteger): TInteger;
     function Multiply(X: TInteger): TInteger;
     function Divide(X: TInteger): TInteger;
-    function Equals(X: TInteger): TBoolean;
+    function EqualTo(X: TInteger): TBoolean;
+    function LessThan(X: TInteger): TBoolean;
+    function GreaterThan(X: TInteger): TBoolean;
+    function LessThanOrEqualTo(X: TInteger): TBoolean;
+    function GreaterThanOrEqualTo(X: TInteger): TBoolean;
     procedure Print(var OutputStream: TextFile); override;
     property Value: Integer read FValue;
   end;
@@ -60,21 +85,63 @@ type
   { TSymbol }
 
   TSymbol = class(TAtom)
-
+  private
+    FName: string;
+  public
+    constructor Create(Name: string);
+    procedure Print(var OutputStream: TextFile); override;
   end;
 
 implementation
 
-{ TBoolean }
+{ TSymbol }
 
-constructor TBoolean.Create(StrValue: string);
+constructor TSymbol.Create(Name: string);
 begin
-
+  FName := Name
 end;
 
-procedure TBoolean.Print(var OutputStream: TextFile);
+procedure TSymbol.Print(var OutputStream: TextFile);
 begin
+  write(OutputStream, FName)
+end;
 
+{ TLispFalse }
+
+constructor TLispFalse.Init;
+begin
+  inherited Create
+end;
+
+class function TLispFalse.Create: TLispFalse;
+begin
+ if not Assigned(FInstance) then
+   FInstance := TLispFalse.Init;
+ Result := FInstance
+end;
+
+procedure TLispFalse.Print(var OutputStream: TextFile);
+begin
+  write(OutputStream, '#f')
+end;
+
+{ TLispTrue }
+
+constructor TLispTrue.Init;
+begin
+  inherited Create
+end;
+
+class function TLispTrue.Create: TLispTrue;
+begin
+  if not Assigned(FInstance) then
+   FInstance := TLispTrue.Init;
+ Result := FInstance
+end;
+
+procedure TLispTrue.Print(var OutputStream: TextFile);
+begin
+  write(OutputStream, '#t')
 end;
 
 { TInteger }
@@ -111,9 +178,44 @@ begin
     Result := TInteger.Create(FValue div X.Value)
 end;
 
-function TInteger.Equals(X: TInteger): TBoolean;
+function TInteger.EqualTo(X: TInteger): TBoolean;
 begin
+  if FValue = X.Value then
+    Result := TLispTrue.Create
+  else
+    Result := TLispFalse.Create
+end;
 
+function TInteger.LessThan(X: TInteger): TBoolean;
+begin
+  if FValue < X.Value then
+    Result := TLispTrue.Create
+  else
+    Result := TLispFalse.Create
+end;
+
+function TInteger.GreaterThan(X: TInteger): TBoolean;
+begin
+  if FValue > X.Value then
+    Result := TLispTrue.Create
+  else
+    Result := TLispFalse.Create
+end;
+
+function TInteger.LessThanOrEqualTo(X: TInteger): TBoolean;
+begin
+  if FValue <= X.Value then
+    Result := TLispTrue.Create
+  else
+    Result := TLispFalse.Create
+end;
+
+function TInteger.GreaterThanOrEqualTo(X: TInteger): TBoolean;
+begin
+  if FValue >= X.Value then
+    Result := TLispTrue.Create
+  else
+    Result := TLispFalse.Create
 end;
 
 procedure TInteger.Print(var OutputStream: TextFile);
